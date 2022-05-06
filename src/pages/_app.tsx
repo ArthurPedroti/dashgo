@@ -10,9 +10,9 @@ if (process.env.NODE_ENV === 'development') {
   makeServer()
 }
 
-function MyApp({ Component, pageProps }: AppProps) {
-  const queryClient = new QueryClient()
+const queryClient = new QueryClient()
 
+function MyApp({ Component, pageProps }: AppProps) {
   return (
     <QueryClientProvider client={queryClient}>
       <ChakraProvider theme={theme}>
