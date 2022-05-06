@@ -27,7 +27,7 @@ import { getUsers, useUsers } from '../../hooks/useUsers'
 import { api } from '../../services/api'
 import { queryClient } from '../../services/queryClient'
 
-export default function UserList() {
+export default function UserList({ users }) {
   const [page, setPage] = useState(1)
   const isWideVersion = useBreakpointValue({
     base: false,
@@ -48,7 +48,9 @@ export default function UserList() {
     )
   }
 
-  const { data, isLoading, isFetching, error } = useUsers(page)
+  const { data, isLoading, isFetching, error } = useUsers(page, {
+    initialData: users
+  })
 
   return (
     <Box>
