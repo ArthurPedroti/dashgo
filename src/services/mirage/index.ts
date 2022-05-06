@@ -1,4 +1,4 @@
-import { createServer, Factory, Model } from 'miragejs'
+import { createServer, Factory, Model, Response } from 'miragejs'
 import faker from '@faker-js/faker'
 
 export type User = {
@@ -7,40 +7,48 @@ export type User = {
   created_at: string
 }
 
-export function makeServer() {
+export const makeServer = () => {
   const server = createServer({
     models: {
-      user: Model.extend<Partial<User>>({})
+      user: Model.extend<Partial<User>>({} as User)
     },
-
     factories: {
       user: Factory.extend({
-        name(i: number) {
-          return `User ${i + 1}`
+        name() {
+          return faker.internet.userName()
         },
-
         email() {
           return faker.internet.email().toLowerCase()
         },
         createdAt() {
-          return faker.date.recent(10)
+          return faker.date.recent()
         }
       })
     },
-
     seeds(server) {
-      server.createList('user', 10)
+      server.createList('user', 200)
     },
 
     routes() {
       this.namespace = 'api'
-      this.timing = 750
+      this.timing = 750 // delay para as chamadas retornarem
+      this.get('/users', function (schema, request) {
+        const { page = 1, per_page = 10 } = request.queryParams
 
-      this.get('/users')
+        const total = schema.all('user').length
+
+        const start = (Number(page) - 1) * Number(per_page)
+        const end = start + Number(per_page)
+
+        const users = this.serialize(schema.all('user')).users.slice(start, end)
+
+        return new Response(200, { 'x-total-count': String(total) }, { users })
+      })
       this.post('/users')
 
+      // Reset para não conflitar com o api routes do next
       this.namespace = ''
-      this.passthrough()
+      this.passthrough() // Como se fosse o next() de um middleware em node, executa o que vem depois
     }
   })
 
