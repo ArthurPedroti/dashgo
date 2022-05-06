@@ -1,4 +1,10 @@
-import { createServer, Factory, Model, Response } from 'miragejs'
+import {
+  createServer,
+  Factory,
+  Model,
+  Response,
+  ActiveModelSerializer
+} from 'miragejs'
 import faker from '@faker-js/faker'
 
 export type User = {
@@ -9,6 +15,10 @@ export type User = {
 
 export const makeServer = () => {
   const server = createServer({
+    serializers: {
+      application: ActiveModelSerializer
+    },
+
     models: {
       user: Model.extend<Partial<User>>({} as User)
     },
@@ -40,10 +50,13 @@ export const makeServer = () => {
         const start = (Number(page) - 1) * Number(per_page)
         const end = start + Number(per_page)
 
+        // @ts-ignore:next-line - bug do mirage
         const users = this.serialize(schema.all('user')).users.slice(start, end)
 
         return new Response(200, { 'x-total-count': String(total) }, { users })
       })
+
+      this.get('/users/:id')
       this.post('/users')
 
       // Reset para não conflitar com o api routes do next
