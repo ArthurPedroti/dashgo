@@ -1,9 +1,11 @@
+import { signIn } from 'next-auth/react'
 import { Button, Flex, Stack } from '@chakra-ui/react'
 import type { NextPage } from 'next'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Input } from '../components/Form/Input'
+import { useRouter } from 'next/router'
 
 type SignInFormData = {
   email: string
@@ -20,10 +22,18 @@ const SignIn: NextPage = () => {
     resolver: yupResolver(signInFormSchema)
   })
   const { errors } = formState
+  const { push } = useRouter()
 
   const handleSignIn: SubmitHandler<SignInFormData> = async (values) => {
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-    console.log(values)
+    const result = await signIn('credentials', {
+      ...values,
+      redirect: false,
+      callbackUrl: '/dashboard'
+    })
+    console.log(result)
+    if (result?.url) {
+      return push(result.url)
+    }
   }
 
   return (

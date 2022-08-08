@@ -1,0 +1,10 @@
+query GetDepartments {
+  departments {
+    data {
+      id
+      attributes {
+        name
+      }
+    }
+  }
+}

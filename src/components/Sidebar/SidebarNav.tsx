@@ -18,6 +18,9 @@ export function SidebarNav() {
         <NavLink icon={RiDashboardLine} href="/users">
           Usuários
         </NavLink>
+        <NavLink icon={RiDashboardLine} href="/departments">
+          Departamentos
+        </NavLink>
       </NavSection>
 
       <NavSection title="AUTOMAÇÃO">
